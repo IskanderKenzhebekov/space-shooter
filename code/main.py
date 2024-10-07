@@ -10,7 +10,7 @@ pygame.display.set_caption("Space Shooter")
 
 running = True
 
-
+  
 # plainsurface (Just to see how to create surface and place it in display)
 surf = pygame.Surface((100,200)) # Need to be attached to dispalay surface
 surf.fill ("yellow")
