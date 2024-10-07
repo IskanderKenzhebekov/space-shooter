@@ -18,7 +18,7 @@ surf.fill ("yellow")
 # importing an image 
 player_surf = pygame.image.load(join('images', 'player.png')).convert_alpha() # "conver.alpha" - allows to improve performances of surfaces dramatically (more frame rates)
 player_rect = player_surf.get_frect(midbottom = (WINDOW_WIDTH /2 , WINDOW_HEIGHT - 200))
-speed = 0.5
+player_direction = 1
 
 meteor_surf = pygame.image.load (join('images', 'meteor.png')).convert_alpha()
 meteor_rect = meteor_surf.get_frect(center = (WINDOW_WIDTH / 2, WINDOW_HEIGHT / 2))
@@ -40,17 +40,17 @@ while running:
     for pos in star_positions:
         display_surface.blit(star_surf, pos)
     
-    player_rect.left += speed
-    
-    if player_rect.left <= 0 or player_rect.right >= WINDOW_WIDTH: #This code makes the spaceship stop at the point when it will hit the end of the display
-        speed = -speed
-
-        
 
     display_surface.blit(meteor_surf, meteor_rect)
     display_surface.blit(laser_surf, laser_rect)
     display_surface.blit(player_surf, player_rect) # code to put one surface (The player.png in this case) on another surface (Origin point is on the top left)
 
+      # Player movement
+    player_rect.x += player_direction * 0.5
+    if player_rect.left <= 0 or player_rect.right >= WINDOW_WIDTH: #This code makes the spaceship stop at the point when it will hit the end of the display
+        player_direction = -player_direction
+
+           
   
     pygame.display.update()
     
