@@ -81,6 +81,14 @@ def collisions():
         if collided_sprites:
             laser.kill()
 
+def display_score():
+    current_time = pygame.time.get_ticks() // 100
+    text_surf = font.render(str(current_time), True, (240,240,240))
+    text_rect = text_surf.get_frect(midbottom = (WINDOW_WIDTH / 2, WINDOW_HEIGHT - 50))
+    display_surface.blit(text_surf, text_rect)
+    pygame.draw.rect(display_surface, (240,240,240), text_rect.inflate(20,10).move(0, -8), 5, 10)
+    
+    
 # general setup
 pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720 # The values we put for the display resolution
@@ -91,8 +99,9 @@ clock = pygame.time.Clock() # The code can control the frame rate
 
 # import 
 star_surf = pygame.image.load(join('images', 'star.png')).convert_alpha() 
-meteor_surf = pygame.image.load (join('images', 'meteor.png')).convert_alpha()
+meteor_surf = pygame.image.load (join('images', 'meteor.png')).convert_alpha() 
 laser_surf = pygame.image.load (join('images', 'laser.png'))
+font = pygame.font.Font(join('images', 'Oxanium-bold.ttf'), 30)
 
 # sprites
 all_sprites = pygame.sprite.Group()
@@ -125,9 +134,9 @@ while running:
         
             
     # Draw the game 
-    display_surface.fill('darkgrey') # to fill the space in blue
+    display_surface.fill('#3a2e3f') # to fill the space in blue
+    display_score()
     all_sprites.draw(display_surface)
-    
     
     
     pygame.display.update()
