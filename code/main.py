@@ -1,6 +1,6 @@
 import pygame
 from os.path import join # That will allow me to not bother about the right path to the files I need to use.
-from random import randint
+from random import randint, uniform
 
 
 class Player (pygame.sprite.Sprite): 
@@ -32,7 +32,7 @@ class Player (pygame.sprite.Sprite):
 
         recent_keys = pygame.key.get_just_pressed()
         if recent_keys [pygame.K_SPACE] and self.can_shoot: 
-            Laser(laser_surf, self.rect.midtop, all_sprites)
+            Laser(laser_surf, self.rect.midtop, (all_sprites, laser_sprites))
             self.can_shoot = False
             self.laser_shoot_time = pygame.time.get_ticks() 
             
@@ -62,14 +62,26 @@ class Meteor(pygame.sprite.Sprite):
         self.rect = self.image.get_frect(center = pos)
         self.start_time = pygame.time.get_ticks()
         self.lifetime = 3000
+        self.direction = pygame.Vector2(uniform(-0.5, 0.5), 1)
+        self.speed = randint(400,500)
     
     def update(self, dt): 
-        self.rect.centery += 400 * dt
+        self.rect.center += self.direction * self.speed * dt
         if pygame.time.get_ticks() - self.start_time >= self.lifetime: 
             self.kill()
-    
 
-# general setup 
+def collisions():
+    global running
+    collision_sprites = pygame.sprite.spritecollide(player, meteor_sprites, False) # The code to check when meteor and a player collides
+    if collision_sprites:
+        running = False 
+        
+    for laser in laser_sprites: # The code to destroy lazer and meteor when they are collide
+        collided_sprites = pygame.sprite.spritecollide(laser, meteor_sprites, True)
+        if collided_sprites:
+            laser.kill()
+
+# general setup
 pygame.init()
 WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720 # The values we put for the display resolution
 display_surface = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT)) # code to open a dispaly
@@ -84,9 +96,11 @@ laser_surf = pygame.image.load (join('images', 'laser.png'))
 
 # sprites
 all_sprites = pygame.sprite.Group()
+meteor_sprites = pygame.sprite.Group()
+laser_sprites = pygame.sprite.Group()
 for i in range (20): 
     Star(all_sprites, star_surf)
-player = Player(all_sprites)
+player = Player(all_sprites) 
 
 
 # Custom events, namely meteor event
@@ -102,14 +116,18 @@ while running:
             running = False
         if event.type == meteor_event:
             x,y = randint(0, WINDOW_WIDTH), randint(-200, -100)
-            Meteor(meteor_surf, (x,y), all_sprites) 
+            Meteor(meteor_surf, (x,y), (all_sprites, meteor_sprites)) 
       
     # Update
     all_sprites.update(dt)
+    collisions()
+    
+        
             
     # Draw the game 
     display_surface.fill('darkgrey') # to fill the space in blue
     all_sprites.draw(display_surface)
+    
     
     
     pygame.display.update()
